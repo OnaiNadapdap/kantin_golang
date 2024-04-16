@@ -35,11 +35,10 @@ func ConnectToDB() *gorm.DB {
 	}
 	fmt.Println("dbconfig : ", dbConfig)
 
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		dbConfig.Username,
 		dbConfig.Password,
 		dbConfig.Host,
-		dbConfig.Port,
 		dbConfig.Name)
 
 	var err error

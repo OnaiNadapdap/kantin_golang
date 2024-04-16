@@ -7,6 +7,7 @@ import (
 
 type PengumumanRepository interface {
 	CreatePengumuman(pengumuman *models.Pengumuman) error
+	GetAllPengumuman() ([]models.Pengumuman, error)
 }
 
 type pengumumanRepository struct {
@@ -19,4 +20,14 @@ func NewPengumumanRepository(db *gorm.DB) PengumumanRepository {
 
 func (r *pengumumanRepository) CreatePengumuman(pengumuman *models.Pengumuman) error {
 	return r.db.Create(pengumuman).Error
+}
+
+func (r *pengumumanRepository) GetAllPengumuman() ([]models.Pengumuman, error) {
+	tx := r.db.Begin()
+	var pengumuman []models.Pengumuman
+	if err := tx.Debug().Find(&pengumuman).Error; err != nil {
+		return nil, err
+	}
+
+	return pengumuman, nil
 }

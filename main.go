@@ -81,6 +81,7 @@ func main() {
 
 	api.POST("/login", userHandler.Login)
 	api.POST("/pengumuman", pengumumanHandler.CreatePengumuman)
+	api.GET("/pengumuman", pengumumanHandler.GetAllPengumuman)
 	api.POST("/feedback", feedbackHandler.CreateFeedback)
 	api.GET("/feedback", feedbackHandler.GetAllMyFeedback)
 	api.POST("/barangs", barangHandler.CreateBarang)

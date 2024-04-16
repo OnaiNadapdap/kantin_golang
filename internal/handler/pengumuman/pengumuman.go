@@ -12,6 +12,7 @@ import (
 
 type PengumumanHandler interface {
 	CreatePengumuman(c *gin.Context)
+	GetAllPengumuman(c *gin.Context) 
 }
 
 type pengumumanHandler struct {
@@ -62,4 +63,14 @@ func (h *pengumumanHandler) CreatePengumuman(c *gin.Context) {
 		"data":    newPengumuman,
 	}
 	c.JSON(http.StatusCreated, successResp)
+}
+
+func (h *pengumumanHandler) GetAllPengumuman(c *gin.Context) {
+	pengumumans, err := h.service.GetAllPengumuman()
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "no data is found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": true, "data": pengumumans})
 }

@@ -1,0 +1,54 @@
+package config
+
+import (
+	"fmt"
+	"os"
+
+	"gorm.io/driver/mysql"
+	"github.com/joho/godotenv"
+	"gorm.io/gorm"
+)
+
+var DB *gorm.DB
+
+func LoadEnv() {
+	err := godotenv.Load()
+	if err != nil {
+		panic("failed to load file")
+	}
+}
+
+type DBConfig struct {
+	Username string
+	Password string
+	Host     string
+	Port     string
+	Name     string
+}
+
+func ConnectToDB() *gorm.DB {
+	var dbConfig DBConfig = DBConfig{
+		Username: os.Getenv("DB_USER"),
+		Password: os.Getenv("DB_PASSWORD"),
+		Host:     os.Getenv("DB_HOST"),
+		Port:     os.Getenv("DB_PORT"),
+		Name:     os.Getenv("DB_NAME"),
+	}
+	fmt.Println("dbconfig : ", dbConfig)
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		dbConfig.Username,
+		dbConfig.Password,
+		dbConfig.Host,
+		dbConfig.Port,
+		dbConfig.Name)
+
+	var err error
+	fmt.Println("dsn : ", dsn)
+	DB, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	// DB, err = gorm.Open("mysql", dsn)
+	if err != nil {
+		panic("Database Connection Error")
+	}
+	return DB
+}

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/gin-gonic/gin"
 	"github.com/onainadapdap1/golang_kantin/config"
 	pengumumanHandler "github.com/onainadapdap1/golang_kantin/internal/handler/pengumuman"
@@ -89,5 +91,13 @@ func main() {
 	api.GET("/menu-makanans", menuMakanHandler.GetAllMenuMakanan)
 	api.POST("/allergy-reports", allergyReportHandler.CreateAllergyReport)
 
-	router.Run()
+	router.Run(envPortOr("8000"))
+}
+
+func envPortOr(port string) string {
+	envPort := os.Getenv("PORT")
+	if envPort != "" {
+		return ":" + envPort
+	}
+	return ":" + port
 }

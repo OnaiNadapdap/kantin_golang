@@ -3,9 +3,8 @@ package config
 import (
 	"fmt"
 	"os"
+
 	_ "github.com/joho/godotenv"
-
-
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -36,6 +35,7 @@ func ConnectToDB() *gorm.DB {
 		Name:     os.Getenv("DB_NAME"),
 	}
 	fmt.Println("dbconfig : ", dbConfig)
+	fmt.Println("test")
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		dbConfig.Username,
@@ -49,6 +49,7 @@ func ConnectToDB() *gorm.DB {
 	DB, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	// DB, err = gorm.Open("mysql", dsn)
 	if err != nil {
+		fmt.Println("failed")
 		panic("Database Connection Error")
 	}
 	fmt.Println("Success")

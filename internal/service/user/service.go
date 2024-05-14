@@ -11,6 +11,7 @@ import (
 
 type UserService interface {
 	Login(input api.LoginInput) (models.User, error)
+	GetUserByID(userID int) (models.User, error)
 }
 
 type userService struct {
@@ -19,6 +20,17 @@ type userService struct {
 
 func NewUserService(repo user.UserRepository) UserService {
 	return &userService{repo: repo}
+}
+
+func (s *userService) GetUserByID(userID int) (models.User, error) {
+	user, err := s.repo.GetUserByID(userID)
+	if err != nil {
+		return user, err
+	}
+	if user.ID == 0 {
+		return user, errors.New("no user found on with that ID")
+	}
+	return user, nil
 }
 
 func (s *userService) Login(input api.LoginInput) (models.User, error) {

@@ -7,7 +7,8 @@ import (
 
 type FeedbackService interface {
 	CreateFeedback(feedback *models.Feedback) error
-	GetAllMyFeedback() ([]models.Feedback, error)
+	GetAllFeedback() ([]models.Feedback, error)
+	GetAllMyFeedback(userID uint) ([]models.Feedback, error)
 }
 
 type feedbackService struct {
@@ -22,10 +23,19 @@ func (s *feedbackService) CreateFeedback(feedback *models.Feedback) error {
 	return s.repository.CreateFeedback(feedback)
 }
 
-func (s *feedbackService) GetAllMyFeedback() ([]models.Feedback, error) {
-	feedbacks, err := s.repository.GetAllMyFeedback()
+func (s *feedbackService) GetAllFeedback() ([]models.Feedback, error) {
+	feedbacks, err := s.repository.GetAllFeedback()
 	if err != nil {
 		return nil, err
 	}
 	return feedbacks, nil
+}
+
+func (s *feedbackService) GetAllMyFeedback(userID uint) ([]models.Feedback, error) {
+	myFeedbacks, err := s.repository.GetAllMyFeedback(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return myFeedbacks, nil
 }

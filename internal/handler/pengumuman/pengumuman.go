@@ -12,7 +12,7 @@ import (
 
 type PengumumanHandler interface {
 	CreatePengumuman(c *gin.Context)
-	GetAllPengumuman(c *gin.Context) 
+	GetAllPengumuman(c *gin.Context)
 }
 
 type pengumumanHandler struct {

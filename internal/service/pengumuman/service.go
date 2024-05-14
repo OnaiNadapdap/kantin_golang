@@ -9,7 +9,7 @@ import (
 
 type PengumumanService interface {
 	CreatePengumuman(pengumuman models.Pengumuman) (models.Pengumuman, error)
-	GetAllPengumuman() ([]models.Pengumuman, error) 
+	GetAllPengumuman() ([]models.Pengumuman, error)
 }
 
 type pengumumanService struct {

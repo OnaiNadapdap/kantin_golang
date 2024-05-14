@@ -12,6 +12,7 @@ import (
 
 type AllergyReportHandler interface {
 	CreateAllergyReport(c *gin.Context)
+	GetAllAllergyReportByUserId(c *gin.Context)
 }
 
 type allergyReportHandler struct {
@@ -20,6 +21,21 @@ type allergyReportHandler struct {
 
 func NewAllergyReportHandler(serv allergyreport.AllergyReportServ) AllergyReportHandler {
 	return &allergyReportHandler{serv: serv}
+}
+
+func (h *allergyReportHandler) GetAllAllergyReportByUserId(c *gin.Context) {
+	// id, _ := strconv.Atoi(c.Param("id"))
+	currentUser := c.MustGet("currentUser").(models.User)
+	allergyReports, err := h.serv.GetAllAllergyReportByUserId(currentUser.ID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "no data is found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data":    allergyReports,
+	})
 }
 
 func (h *allergyReportHandler) CreateAllergyReport(c *gin.Context) {
@@ -42,14 +58,14 @@ func (h *allergyReportHandler) CreateAllergyReport(c *gin.Context) {
 		Allergies: allergyReportInput.Allergies,
 		File:      allergyReportInput.File,
 	}
-
-	if err := h.serv.CreateAllergyReport(&allergyReport); err != nil {
+	newAlergyReport, err := h.serv.CreateAllergyReport(allergyReport)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send allergy report", "err": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
 		"success": "Successfully sent allergy report",
-		"data":    allergyReport,
+		"data":    newAlergyReport,
 	})
 }

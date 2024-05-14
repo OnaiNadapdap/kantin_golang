@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/onainadapdap1/golang_kantin/config"
 	pengumumanHandler "github.com/onainadapdap1/golang_kantin/internal/handler/pengumuman"
+	"github.com/onainadapdap1/golang_kantin/internal/middleware"
 	pengumumanRepo "github.com/onainadapdap1/golang_kantin/internal/repository/pengumuman"
 	"github.com/onainadapdap1/golang_kantin/internal/service/auth"
 	pengumumanServ "github.com/onainadapdap1/golang_kantin/internal/service/pengumuman"
@@ -36,7 +37,7 @@ import (
 var DB *gorm.DB
 
 func init() {
-	// config.LoadEnv()
+	config.LoadEnv()
 	DB = config.ConnectToDB()
 }
 
@@ -80,19 +81,27 @@ func main() {
 	// DB.Create(&newPengumuman)
 
 	api.POST("/login", userHandler.Login)
-	api.POST("/pengumuman", pengumumanHandler.CreatePengumuman)
-	api.GET("/pengumuman", pengumumanHandler.GetAllPengumuman)
-	api.POST("/feedback", feedbackHandler.CreateFeedback)
-	api.GET("/feedback", feedbackHandler.GetAllMyFeedback)
-	api.POST("/barangs", barangHandler.CreateBarang)
-	api.GET("/show-barangs/:id", barangHandler.ShowBarang)
-	api.GET("/hide-barangs/:id", barangHandler.HideBarang)
-	api.GET("/barangs", barangHandler.GetPengumuman) //pagination
-	api.POST("/menu-makanans", menuMakanHandler.CreateMenuMakanan)
-	api.GET("/menu-makanans", menuMakanHandler.GetAllMenuMakanan)
-	api.POST("/allergy-reports", allergyReportHandler.CreateAllergyReport)
+	// admin
+	api.POST("/pengumuman", middleware.AuthAdminMiddleware(authService, userServ), pengumumanHandler.CreatePengumuman)
+	api.GET("/pengumuman", middleware.AuthBothMiddleware(authService, userServ), pengumumanHandler.GetAllPengumuman)
+	api.GET("/feedback", middleware.AuthAdminMiddleware(authService, userServ), feedbackHandler.GetAllFeedback)
+	api.POST("/menu-makanans", middleware.AuthAdminMiddleware(authService, userServ), menuMakanHandler.CreateMenuMakanan)
+	api.GET("/menu-makanans", middleware.AuthAdminMiddleware(authService, userServ), menuMakanHandler.GetAllMenuMakanan)
+	api.GET("/show-barangs/:id", middleware.AuthAdminMiddleware(authService, userServ), barangHandler.ShowBarang)
+	api.GET("/hide-barangs/:id", middleware.AuthAdminMiddleware(authService, userServ), barangHandler.HideBarang)
+		
+	// user
+	api.POST("/feedback", middleware.AuthUserMiddleware(authService, userServ), feedbackHandler.CreateFeedback)
+	api.GET("/my-feedback", middleware.AuthUserMiddleware(authService, userServ), feedbackHandler.GetAllMyFeedback)
+	api.POST("/barangs", middleware.AuthUserMiddleware(authService, userServ), barangHandler.CreateBarang)
+	api.GET("/barangs", middleware.AuthUserMiddleware(authService, userServ), barangHandler.GetPengumuman) 
+	api.POST("/allergy-reports", middleware.AuthUserMiddleware(authService, userServ), allergyReportHandler.CreateAllergyReport)
+	api.GET("/allergy-reports", middleware.AuthUserMiddleware(authService, userServ), allergyReportHandler.GetAllAllergyReportByUserId)
+	// keasramaan
+	// approved allergy report
+	// reject allergy report
 
-	router.Run(envPortOr("8000"))
+	router.Run(envPortOr("8080"))
 }
 
 func envPortOr(port string) string {

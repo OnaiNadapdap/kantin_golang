@@ -7,7 +7,9 @@ import (
 
 type FeedbackRepository interface {
 	CreateFeedback(feedback *models.Feedback) error
-	GetAllMyFeedback() ([]models.Feedback, error)
+	GetAllFeedback() ([]models.Feedback, error)
+	GetAllMyFeedback(userID uint) ([]models.Feedback, error)
+	
 }
 
 type feedbackRepository struct {
@@ -22,12 +24,21 @@ func (r *feedbackRepository) CreateFeedback(feedback *models.Feedback) error {
 	return r.db.Create(feedback).Error
 }
 
-func (r *feedbackRepository) GetAllMyFeedback() ([]models.Feedback, error) {
+func (r *feedbackRepository) GetAllFeedback() ([]models.Feedback, error) {
 	tx := r.db.Begin()
 	var feedbacks []models.Feedback
 	if err := tx.Debug().Find(&feedbacks).Error; err != nil {
 		return nil, err
 	}
 
+	return feedbacks, nil
+}
+
+func (r *feedbackRepository) GetAllMyFeedback(userID uint) ([]models.Feedback, error) {
+	tx := r.db.Begin()
+	var feedbacks []models.Feedback
+	if err := tx.Debug().Where("user_id", userID).Find(&feedbacks).Error; err != nil {
+		return nil, err
+	}
 	return feedbacks, nil
 }

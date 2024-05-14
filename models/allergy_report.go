@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 type AllergyReport struct {
 	ID              uint `gorm:"primaryKey"`
@@ -11,4 +13,5 @@ type AllergyReport struct {
 	AlasanPenolakan string
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
+	User            User
 }

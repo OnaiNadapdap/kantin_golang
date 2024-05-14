@@ -6,8 +6,9 @@ import (
 )
 
 type AllergyReportServ interface {
-	CheckIsReportExist(userID uint)  (bool)
-	CreateAllergyReport(report *models.AllergyReport) error
+	CheckIsReportExist(userID uint) bool
+	CreateAllergyReport(report models.AllergyReport) (models.AllergyReport, error)
+	GetAllAllergyReportByUserId(userID uint) ([]models.AllergyReport, error)
 }
 
 type allergyreportServ struct {
@@ -18,10 +19,27 @@ func NewAllergyReportServ(repo allergyreport.AllergyReportRepo) AllergyReportSer
 	return &allergyreportServ{repo: repo}
 }
 
-func (s *allergyreportServ) CheckIsReportExist(userID uint)  (bool) {
-	return s.repo.CheckIsReportExist(userID)
+func (s *allergyreportServ) CheckIsReportExist(userID uint) bool {
+	isExist := s.repo.CheckIsReportExist(userID)
+	if isExist == 1 {
+		return true
+	}
+	return false
 }
 
-func (s *allergyreportServ) CreateAllergyReport(report *models.AllergyReport) error {
-	return s.repo.CreateReportAllergy(*report)
+func (s *allergyreportServ) CreateAllergyReport(report models.AllergyReport) (models.AllergyReport, error) {
+	if err := s.repo.CreateReportAllergy(&report); err != nil {
+		return models.AllergyReport{}, err
+	}
+	return report, nil
+	// return s.repo.CreateReportAllergy(*report)
+}
+
+func (s *allergyreportServ) GetAllAllergyReportByUserId(userID uint) ([]models.AllergyReport, error) {
+	allergyReports, err := s.repo.GetAllAllergyReportByUserId(userID)
+	if err != nil {
+		return []models.AllergyReport{}, err
+	}
+
+	return allergyReports, nil
 }

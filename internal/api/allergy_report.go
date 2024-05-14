@@ -1,7 +1,7 @@
 package api
 
 type AllergyReportInput struct {
-	UserID    uint   `json:"user_id" form:"user_id"`
+	// UserID    uint   `json:"user_id" form:"user_id"`
 	Allergies string `json:"allergies" form:"allergies"`
 	File      string `json:"file" form:"file"`
 }

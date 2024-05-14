@@ -80,20 +80,32 @@ func main() {
 	// // Menyimpan pengumuman ke dalam database
 	// DB.Create(&newPengumuman)
 
-	api.POST("/login", userHandler.Login)
+	// 1
+	api.POST("/login", userHandler.Login) 
 	// admin
+	// 2
 	api.POST("/pengumuman", middleware.AuthAdminMiddleware(authService, userServ), pengumumanHandler.CreatePengumuman)
+	// 3
 	api.GET("/pengumuman", middleware.AuthBothMiddleware(authService, userServ), pengumumanHandler.GetAllPengumuman)
+	// 4
 	api.GET("/feedback", middleware.AuthAdminMiddleware(authService, userServ), feedbackHandler.GetAllFeedback)
+	// 5
 	api.POST("/menu-makanans", middleware.AuthAdminMiddleware(authService, userServ), menuMakanHandler.CreateMenuMakanan)
+	// 10
 	api.GET("/menu-makanans", middleware.AuthAdminMiddleware(authService, userServ), menuMakanHandler.GetAllMenuMakanan)
+	// 11
 	api.GET("/show-barangs/:id", middleware.AuthAdminMiddleware(authService, userServ), barangHandler.ShowBarang)
+	// 12
 	api.GET("/hide-barangs/:id", middleware.AuthAdminMiddleware(authService, userServ), barangHandler.HideBarang)
 		
 	// user
+	// 6
 	api.POST("/feedback", middleware.AuthUserMiddleware(authService, userServ), feedbackHandler.CreateFeedback)
+	// 7
 	api.GET("/my-feedback", middleware.AuthUserMiddleware(authService, userServ), feedbackHandler.GetAllMyFeedback)
+	// 8
 	api.POST("/barangs", middleware.AuthUserMiddleware(authService, userServ), barangHandler.CreateBarang)
+	// 9
 	api.GET("/barangs", middleware.AuthUserMiddleware(authService, userServ), barangHandler.GetPengumuman) 
 	api.POST("/allergy-reports", middleware.AuthUserMiddleware(authService, userServ), allergyReportHandler.CreateAllergyReport)
 	api.GET("/allergy-reports", middleware.AuthUserMiddleware(authService, userServ), allergyReportHandler.GetAllAllergyReportByUserId)

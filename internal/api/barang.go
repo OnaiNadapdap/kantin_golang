@@ -1,7 +1,7 @@
 package api
 
 type CreateInputBarang struct {
-	UserID      uint   `json:"user_id" form:"user_id"`
+	// UserID      uint   `json:"user_id" form:"user_id"`
 	Kategori    string `json:"kategori" form:"kategori" binding:"required"`
 	Name        string `json:"name" form:"name" binding:"required"`
 	Description string `json:"description" form:"description" binding:"required"`

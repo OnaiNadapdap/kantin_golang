@@ -3,7 +3,6 @@ package feedback
 import (
 	"log"
 	"net/http"
-	"reflect"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -27,6 +26,7 @@ func NewFeedbackHandler(service feedback.FeedbackService) FeedbackHandler {
 }
 
 func (h *feedbackHandler) CreateFeedback(c *gin.Context) {
+	currentUser := c.MustGet("currentUser").(models.User)
 	var feedback api.CreateFeedbackInput
 	if err := c.ShouldBind(&feedback); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error brewuu": err.Error()})
@@ -34,7 +34,7 @@ func (h *feedbackHandler) CreateFeedback(c *gin.Context) {
 	}
 
 	log.Println("feedback input : ", feedback)
-	log.Println("tipe user id : ", reflect.TypeOf(feedback.UserID))
+	// log.Println("tipe user id : ", reflect.TypeOf(feedback.UserID))
 
 	parsedTime, err := time.Parse("2006-01-02", feedback.Date)
 	if err != nil {
@@ -43,7 +43,7 @@ func (h *feedbackHandler) CreateFeedback(c *gin.Context) {
 	}
 
 	feedbackInput := models.Feedback{
-		UserID:        feedback.UserID,
+		UserID:        currentUser.ID,
 		Date:          parsedTime,
 		ValueRating:   feedback.ValueRating,
 		SubjectReview: feedback.SubjectReview,

@@ -39,6 +39,7 @@ func (h *allergyReportHandler) GetAllAllergyReportByUserId(c *gin.Context) {
 }
 
 func (h *allergyReportHandler) CreateAllergyReport(c *gin.Context) {
+	currentUser := c.MustGet("currentUser").(models.User)
 	var allergyReportInput api.AllergyReportInput
 	if err := c.ShouldBind(&allergyReportInput); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error brewuu": err.Error()})
@@ -47,14 +48,14 @@ func (h *allergyReportHandler) CreateAllergyReport(c *gin.Context) {
 
 	log.Println("allergy report : ", allergyReportInput)
 
-	isExist := h.serv.CheckIsReportExist(allergyReportInput.UserID)
+	isExist := h.serv.CheckIsReportExist(currentUser.ID)
 	if isExist {
 		c.JSON(http.StatusBadRequest, gin.H{"error brewuu 2": "please wait the confirmation!"})
 		return
 	}
 
 	allergyReport := models.AllergyReport{
-		UserID:    allergyReportInput.UserID,
+		UserID:    currentUser.ID,
 		Allergies: allergyReportInput.Allergies,
 		File:      allergyReportInput.File,
 	}

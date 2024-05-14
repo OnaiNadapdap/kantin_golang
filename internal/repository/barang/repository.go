@@ -1,6 +1,7 @@
 package barang
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -64,18 +65,20 @@ func (r *barangRepository) HideBarang(barang models.Barang) error {
 }
 
 func (r *barangRepository) GetPengumuman(page int, perPage int) ([]models.Barang, error) {
-    var pengumuman []models.Barang
-    today := time.Now().Format("2006-01-02")
+	fmt.Println("loggin here repo")
+	var pengumuman []models.Barang
+	today := time.Now().Format("2006-01-02")
+	tx := r.db.Begin()
 
-    if err := r.db.Where("showed = ?", 1).
-        Where("expiry_date >= ?", today).
-        Order("kategori").
-        Order("expiry_date desc").
-        Offset((page - 1) * perPage).
-        Limit(perPage).
-        Find(&pengumuman).Error; err != nil {
-        return nil, err
-    }
+	if err := tx.Debug().Where("showed = ?", 1).
+		Where("expiry_date >= ?", today).
+		Order("kategori").
+		Order("expiry_date desc").
+		Offset((page - 1) * perPage).
+		Limit(perPage).
+		Find(&pengumuman).Error; err != nil {
+		return nil, err
+	}
 
-    return pengumuman, nil
+	return pengumuman, nil
 }

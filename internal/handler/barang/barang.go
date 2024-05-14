@@ -31,6 +31,7 @@ func NewBarangHandler(serv barang.BarangService) BarangHandler {
 }
 
 func (h *barangHandler) CreateBarang(c *gin.Context) {
+	currentUser := c.MustGet("currentUser").(models.User)
 	var barangInput api.CreateInputBarang
 	if err := c.ShouldBind(&barangInput); err != nil {
 		// {"error brewuu":"json: cannot unmarshal string into Go struct field CreateInputBarang.user_id of type uint"}
@@ -38,7 +39,7 @@ func (h *barangHandler) CreateBarang(c *gin.Context) {
 		return
 	}
 	log.Println("barang input : ", barangInput)
-	log.Println("tipe user id : ", reflect.TypeOf(barangInput.UserID))
+	log.Println("tipe user id : ", reflect.TypeOf(currentUser.ID))
 
 	parsedTime, err := time.Parse("2006-01-02", barangInput.ExpiryDate)
 	if err != nil {
@@ -48,7 +49,7 @@ func (h *barangHandler) CreateBarang(c *gin.Context) {
 
 	barang := models.Barang{
 		Kategori:    barangInput.Kategori,
-		UserID:      barangInput.UserID,
+		UserID:      currentUser.ID,
 		Name:        barangInput.Name,
 		Description: barangInput.Description,
 		ExpiryDate:  parsedTime,
@@ -101,7 +102,7 @@ func (h *barangHandler) HideBarang(c *gin.Context) {
 func (h *barangHandler) GetPengumuman(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	perPage, _ := strconv.Atoi(c.DefaultQuery("perPage", "10"))
-
+	fmt.Println("logging here handler")
 	pengumuman, err := h.serv.GetPengumuman(page, perPage)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch pengumuman"})

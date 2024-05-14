@@ -1,6 +1,8 @@
 package barang
 
 import (
+	"fmt"
+
 	"github.com/onainadapdap1/golang_kantin/internal/repository/barang"
 	"github.com/onainadapdap1/golang_kantin/models"
 )
@@ -54,6 +56,7 @@ func (s *barangService) HideBarang(id uint) error {
 }
 
 func (s *barangService) GetPengumuman(page int, perPage int) ([]models.Barang, error) {
+	fmt.Println("logging here serv")
     pengumuman, err := s.repo.GetPengumuman(page, perPage)
     if err != nil {
         return nil, err

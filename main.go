@@ -37,8 +37,9 @@ import (
 var DB *gorm.DB
 
 func init() {
-	// config.LoadEnv()
+	config.LoadEnv()
 	DB = config.ConnectToDB()
+	defer config.CloseDB()
 }
 
 func main() {

@@ -39,7 +39,6 @@ var DB *gorm.DB
 func init() {
 	// config.LoadEnv()
 	DB = config.ConnectToDB()
-	defer config.CloseDB()
 }
 
 func main() {

@@ -55,25 +55,37 @@ func ConnectToDB() *gorm.DB {
 	}
 	fmt.Println("Success")
 
+	// Get the generic database object sql.DB to use its functions
 	sqlDB, err := DB.DB()
 	if err != nil {
 		log.Fatalf("Error getting SQL DB instance from Gorm: %v", err)
 	}
 
-	sqlDB.SetMaxOpenConns(100)  // Maximum number of open connections to the database
-	sqlDB.SetMaxIdleConns(10)   // Maximum number of connections in the idle connection pool
-	sqlDB.SetConnMaxLifetime(0) // Maximum amount of time a connection may be reused
+	// Set the maximum number of open connections to the database
+	sqlDB.SetMaxOpenConns(100)
 
+	// Set the maximum number of idle connections in the pool
+	sqlDB.SetMaxIdleConns(25)
+
+	// Set the maximum amount of time a connection may be reused
+	sqlDB.SetConnMaxLifetime(0)
+	
 	return DB
 }
 
 // CloseDB closes the database connection.
 func CloseDB() {
+	if DB == nil {
+		log.Println("Database connection is not initialized.")
+		return
+	}
+
 	sqlDB, err := DB.DB()
 	if err != nil {
 		log.Printf("Error getting SQL DB instance from Gorm for closing: %v", err)
 		return
 	}
+
 	err = sqlDB.Close()
 	if err != nil {
 		log.Printf("Error closing the database connection: %v", err)
